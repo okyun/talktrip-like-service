@@ -43,12 +43,17 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
+    @SuppressWarnings("null")
     public ConcurrentKafkaListenerContainerFactory<String, LikeChangeEventDTO> likeChangeKafkaListenerContainerFactory(
             ConsumerFactory<String, LikeChangeEventDTO> likeChangeConsumerFactory
     ) {
         ConcurrentKafkaListenerContainerFactory<String, LikeChangeEventDTO> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(likeChangeConsumerFactory);
+        // Generic capture 경고 회피(런타임 동작에 영향 없음)
+        @SuppressWarnings("null")
+        ConsumerFactory<? super String, ? super LikeChangeEventDTO> cf = likeChangeConsumerFactory;
+        factory.setConsumerFactory(cf);
+        factory.setBatchListener(true);
         return factory;
     }
 }
